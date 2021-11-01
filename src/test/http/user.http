@@ -1,0 +1,51 @@
+GET http://localhost:8080/api/students
+
+###
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "number": "2046",
+  "password": "2046"
+}
+
+> {% client.global.set("token", response.headers.valueOf("token")); %}
+###
+GET http://localhost:8080/api/teachers
+
+###
+GET http://localhost:8080/api/teacher/903616315497340928/students
+
+###
+GET http://localhost:8080/api/teacher/unselected
+
+###
+PUT http://localhost:8080/api/teacher/pwd/2046
+token: {{token}}
+
+###
+POST http://localhost:8080/api/teacher/teachers
+token: {{token}}
+Content-Type: application/json
+
+{
+  "number": "1001",
+  "name": "刘老师",
+  "total": 10
+}
+
+###
+POST http://localhost:8080/api/teacher/students
+token: {{token}}
+Content-Type: application/json
+
+[
+  {
+    "name": "aaa",
+    "number": "s10"
+  },
+  {
+    "name": "bb",
+    "number": "s11"
+  }
+]
