@@ -42,7 +42,7 @@ public class UserService {
     @Transactional
     public void select(long sid, long tid) {
         // 如果学生不存在
-        User student = userRepository.findById(sid).orElse(null);
+        User student = userRepository.findByIdForUpdate(sid);
         if (student == null) {
             throw new XException(400, "学生不存在");
         }
@@ -61,6 +61,7 @@ public class UserService {
         int result = userRepository.updateTeacherCount(tid);
         if (result > 0) {
             student.setTeacherId(tid);
+            student.setTeacherName(teacher.getName());
             student.setSelectTime(LocalDateTime.now());
             userRepository.save(student);
         }

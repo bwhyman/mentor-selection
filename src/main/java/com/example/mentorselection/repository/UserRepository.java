@@ -17,6 +17,9 @@ public interface UserRepository extends CrudRepository<User, Long> {
     @Query("select * from user u where u.role=:role;")
     List<User> list(int role);
 
+    @Query("select * from user u where u.id=:id for update;")
+    User findByIdForUpdate(long id);
+
     @Modifying
     @Query("update user u set u.count=u.count+1 where u.total-u.count>0 and id=:tid")
     int updateTeacherCount(long tid);

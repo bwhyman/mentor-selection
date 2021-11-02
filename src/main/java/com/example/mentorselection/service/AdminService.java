@@ -54,4 +54,10 @@ public class AdminService {
             throw new XException(400, "密码重置失败，账号不存在");
         }
     }
+
+    public List<User> listStudents() {
+        List<User> list = new ArrayList<>();
+        userRepository.findAll().forEach(list::add);
+        return list;
+    }
 }

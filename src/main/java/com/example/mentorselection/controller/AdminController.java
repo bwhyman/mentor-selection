@@ -71,4 +71,8 @@ public class AdminController {
         adminService.addStartTime(a, uid);
         return ResultVO.success(Map.of());
     }
+    @GetMapping("allstudents")
+    public ResultVO getAllStudents() {
+        return ResultVO.success(Map.of("students",userService.listUsers(User.ROLE_STUDENT)));
+    }
 }

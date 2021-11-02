@@ -30,10 +30,12 @@ public class TeacherController {
         return ResultVO.success(Map.of("students",  userService.listStudents(tid)));
     }
 
-    @PostMapping("students")
+    // 关闭
+    // @PostMapping("students")
     public ResultVO postStudent(@RequestBody User student, @RequestAttribute("uid") long tid) {
         userService.addStudent(tid, student);
         User t = userService.getUser(tid);
         return ResultVO.success(Map.of("students",  userService.listStudents(tid), "teacher", t));
     }
+
 }

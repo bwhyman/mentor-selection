@@ -24,7 +24,6 @@ public class User {
     @CreatedBy
     private Long id;
     private String name;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String number;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
@@ -33,6 +32,7 @@ public class User {
     private Integer total;
     private Integer count;
     private Long teacherId;
+    private String teacherName;
     private String description;
     private LocalDateTime selectTime;
     private LocalDateTime insertTime;

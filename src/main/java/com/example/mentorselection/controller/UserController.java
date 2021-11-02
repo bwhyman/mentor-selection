@@ -61,11 +61,8 @@ public class UserController {
     @GetMapping("info")
     public ResultVO getInfo(@RequestAttribute("uid") long uid) {
         User u = userService.getUser(uid);
-        if (u.getTeacherId() != null) {
-            User teacher = userService.getUser(u.getTeacherId());
-            return ResultVO.success(Map.of("user", u, "teacher", teacher));
-        }
-        return ResultVO.success(Map.of("user", u));
+
+        return ResultVO.success(Map.of("user", u,"starttime", startTime.getStartTime()));
 
     }
     // 全部教师信息
@@ -84,7 +81,7 @@ public class UserController {
             throw new XException(400, "未到开始时间");
         }
         userService.select(uid, tid);
-        return ResultVO.success(Map.of("teacher", userService.getUser(tid),
+        return ResultVO.success(Map.of("user", userService.getUser(uid),
                 "teachers", userService.listUsers(User.ROLE_TEACHER)));
     }
 }
