@@ -1,7 +1,7 @@
 package com.example.mentorselection.controller;
 
 import com.example.mentorselection.entity.User;
-import com.example.mentorselection.service.AdminService;
+import com.example.mentorselection.service.TeacherService;
 import com.example.mentorselection.service.UserService;
 import com.example.mentorselection.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -18,35 +18,34 @@ import java.util.Map;
 @Slf4j
 public class AdminController {
     @Autowired
-    private AdminService adminService;
+    private TeacherService teacherService;
     @Autowired
     private UserService userService;
     @Autowired
     private PasswordEncoder encoder;
 
-    @PutMapping("password/{tid}")
-    public ResultVO putPwd(@PathVariable long tid) {
-        adminService.resetPassword(tid);
+    //管理员角色发一个请求，过拦截器校验一下
+    @GetMapping("checkadmin")
+    public ResultVO getCheckadmin() {
         return ResultVO.success(Map.of());
     }
-    @PutMapping("passwordstudent/{number}")
+    // 重置账号密码
+    @PutMapping("password/{number}")
     public ResultVO putPwd2(@PathVariable String number) {
-        adminService.resetPassword(number, encoder.encode(number));
+        teacherService.resetPassword(number);
         return ResultVO.success(Map.of());
     }
-
-
+    // 添加教师
     @PostMapping("teachers")
     public ResultVO postTeacher(@RequestBody User user) {
         user.setRole(User.ROLE_TEACHER);
         user.setPassword(encoder.encode(user.getNumber()));
         user.setCount(0);
         user.setInsertTime(LocalDateTime.now());
-        User u = adminService.addUser(user);
-
+        User u = teacherService.addUser(user);
         return ResultVO.success(Map.of("teachers", userService.listUsers(User.ROLE_TEACHER)));
     }
-
+    // 添加学生列表
     @PostMapping("students")
     public ResultVO postStudents(@RequestBody List<User> users) {
         for (User u : users) {
@@ -54,25 +53,17 @@ public class AdminController {
             u.setRole(User.ROLE_STUDENT);
             u.setInsertTime(LocalDateTime.now());
         }
-        List<User> users1 = adminService.addUsers(users);
+        List<User> users1 = teacherService.addUsers(users);
         return ResultVO.success(Map.of("users", users1));
     }
 
-    @GetMapping("{tid}/students")
-    public ResultVO getTeachersByTid(@PathVariable long tid) {
-        return ResultVO.success(Map.of("students",  userService.listStudents(tid)));
-    }
-
+    // 更新开始时间
     @PutMapping("starttime/{time}")
     public ResultVO putStartTime(@PathVariable String time, @RequestAttribute("uid") long uid) {
         log.debug("" + time);
         LocalDateTime a = LocalDateTime.parse(time);
         log.debug("" + a);
-        adminService.addStartTime(a, uid);
+        teacherService.addStartTime(a, uid);
         return ResultVO.success(Map.of());
-    }
-    @GetMapping("allstudents")
-    public ResultVO getAllStudents() {
-        return ResultVO.success(Map.of("students",userService.listUsers(User.ROLE_STUDENT)));
     }
 }

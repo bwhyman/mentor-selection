@@ -24,6 +24,7 @@ public class User {
     @CreatedBy
     private Long id;
     private String name;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String number;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;

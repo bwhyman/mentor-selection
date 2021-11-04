@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class AdminService {
+public class TeacherService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -41,23 +41,38 @@ public class AdminService {
         userRepository.save(admin);
         startTime.setStartTime(time);
     }
-
-    public void resetPassword(long tid) {
-        User t = userRepository.findById(tid).get();
-        t.setPassword(encoder.encode(t.getNumber()));
-        userRepository.save(t);
-    }
-
     @Transactional
-    public void resetPassword(String number, String password) {
-        if(userRepository.updatePassword(number, password) == 0) {
+    public void resetPassword(String number) {
+        if(userRepository.updatePassword(number, encoder.encode(number)) == 0) {
             throw new XException(400, "密码重置失败，账号不存在");
         }
     }
 
-    public List<User> listStudents() {
-        List<User> list = new ArrayList<>();
-        userRepository.findAll().forEach(list::add);
-        return list;
+    // 未选导师学生
+    public List<User> listUnselected() {
+        return userRepository.listStudentsByUnselected();
+    }
+    //获取指定教师下的学生
+    public List<User> listStudents(long tid) {
+        return userRepository.listStudentsByTid(tid);
+    }
+
+    public void addStudent(long tid, User student) {
+        User stu = userRepository.find(student.getNumber());
+        User teacher = userRepository.findById(tid).get();
+        if (stu == null || !stu.getName().equals(student.getName())) {
+            throw new XException(400, "学生不存在");
+        }
+        if (stu.getTeacherId() != null) {
+            User t = userRepository.findById(stu.getTeacherId()).get();
+            throw new XException(400, "学生已被 " + t.getName() + " 老师录入，请与相关学生教师确认");
+        }
+        int result = userRepository.updateTeacherCount(tid);
+        if (result == 0) {
+            throw new XException(400, "录入学生已达总数，不可录入");
+        }
+        stu.setTeacherId(tid);
+        stu.setSelectTime(LocalDateTime.now());
+        userRepository.save(stu);
     }
 }

@@ -29,9 +29,9 @@ public class UserService {
     }
     // 个人更新密码
     public void updatePassword(long uid, String pwd) {
-        User user = userRepository.findById(uid).get();
-        user.setPassword(encoder.encode(pwd));
-        userRepository.save(user);
+        if (userRepository.updatePassword(uid, encoder.encode(pwd)) == 0) {
+            throw new XException(400, "密码重置失败，账号不存在");
+        }
     }
     // 基于不同角色列出用户
     public List<User> listUsers(int role) {
@@ -41,7 +41,7 @@ public class UserService {
     // 选导师
     @Transactional
     public void select(long sid, long tid) {
-        // 如果学生不存在
+        // 如果学生不存在，sql加了for update
         User student = userRepository.findByIdForUpdate(sid);
         if (student == null) {
             throw new XException(400, "学生不存在");
@@ -64,33 +64,9 @@ public class UserService {
             student.setTeacherName(teacher.getName());
             student.setSelectTime(LocalDateTime.now());
             userRepository.save(student);
+        } else {
+            throw new XException(400, "导师数量已满，请重新选择");
         }
-    }
-    // 未选导师学生
-    public List<User> listUnselected() {
-        return userRepository.listStudentsByUnselected();
-    }
-    //获取指定教师下的学生
-    public List<User> listStudents(long tid) {
-        return userRepository.listStudentsByTid(tid);
     }
 
-    public void addStudent(long tid, User student) {
-        User stu = userRepository.find(student.getNumber());
-        User teacher = userRepository.findById(tid).get();
-        if (stu == null || !stu.getName().equals(student.getName())) {
-            throw new XException(400, "学生不存在");
-        }
-        if (stu.getTeacherId() != null) {
-            User t = userRepository.findById(stu.getTeacherId()).get();
-            throw new XException(400, "学生已被 " + t.getName() + " 老师录入，请与相关学生教师确认");
-        }
-        int result = userRepository.updateTeacherCount(tid);
-        if (result == 0) {
-            throw new XException(400, "录入学生已达总数，不可录入");
-        }
-        stu.setTeacherId(tid);
-        stu.setSelectTime(LocalDateTime.now());
-        userRepository.save(stu);
-    }
 }

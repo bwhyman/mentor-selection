@@ -1,6 +1,7 @@
 package com.example.mentorselection.controller;
 
 import com.example.mentorselection.entity.User;
+import com.example.mentorselection.service.TeacherService;
 import com.example.mentorselection.service.UserService;
 import com.example.mentorselection.vo.ResultVO;
 import lombok.extern.java.Log;
@@ -17,25 +18,33 @@ import java.util.Map;
 public class TeacherController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private PasswordEncoder encoder;
 
+    @Autowired
+    private TeacherService teacherService;
+
+    // 查看未选择学生
     @GetMapping("unselected")
     public ResultVO getUnSelected() {
-        return ResultVO.success(Map.of("students",  userService.listUnselected()));
+        return ResultVO.success(Map.of("students",  teacherService.listUnselected()));
     }
 
+    // 教师下学生
     @GetMapping("students")
     public ResultVO getStudents(@RequestAttribute("uid") long tid) {
-        return ResultVO.success(Map.of("students",  userService.listStudents(tid)));
+        return ResultVO.success(Map.of("students",  teacherService.listStudents(tid)));
     }
 
     // 关闭
-    // @PostMapping("students")
+    /*@PostMapping("students")
     public ResultVO postStudent(@RequestBody User student, @RequestAttribute("uid") long tid) {
-        userService.addStudent(tid, student);
+        teacherService.addStudent(tid, student);
         User t = userService.getUser(tid);
-        return ResultVO.success(Map.of("students",  userService.listStudents(tid), "teacher", t));
-    }
+        return ResultVO.success(Map.of("students",  teacherService.listStudents(tid), "teacher", t));
+    }*/
 
+    // 全部学生指导教师，导出表格用
+    @GetMapping("allstudents")
+    public ResultVO getAllStudents() {
+        return ResultVO.success(Map.of("students",userService.listUsers(User.ROLE_STUDENT)));
+    }
 }

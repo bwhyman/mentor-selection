@@ -39,13 +39,13 @@ public class UserController {
         String role = "";
         switch (u.getRole()) {
             case 0:
-                role = "eyJ0";
+                role = "Yo87M";
                 break;
             case 1:
-                role = "eXAi";
+                role = "nU0vt";
                 break;
             case 5:
-                role = "OiJK";
+                role = "ppYMg";
                 break;
         }
         response.addHeader("role", role);
@@ -61,7 +61,6 @@ public class UserController {
     @GetMapping("info")
     public ResultVO getInfo(@RequestAttribute("uid") long uid) {
         User u = userService.getUser(uid);
-
         return ResultVO.success(Map.of("user", u,"starttime", startTime.getStartTime()));
 
     }
@@ -81,7 +80,6 @@ public class UserController {
             throw new XException(400, "未到开始时间");
         }
         userService.select(uid, tid);
-        return ResultVO.success(Map.of("user", userService.getUser(uid),
-                "teachers", userService.listUsers(User.ROLE_TEACHER)));
+        return ResultVO.success(Map.of("user", userService.getUser(uid)));
     }
 }
