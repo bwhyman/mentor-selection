@@ -1,22 +1,22 @@
-package com.example.mentorselection.controller;
+package com.example.mentorselection.exception;
 
 
-import com.example.mentorselection.exception.XException;
 import com.example.mentorselection.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestControllerAdvice
 public class ExceptionController {
     @ExceptionHandler(XException.class)
-    public ResultVO handleValidException(XException exception) {
-        return ResultVO.error(exception.getCode(), exception.getMessage());
+    public Mono<ResultVO> handleValidException(XException exception) {
+        return Mono.just(ResultVO.error(exception.getCode(), exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResultVO handleException(Exception exception) {
-        return ResultVO.error(400, "请求错误");
+    public Mono<ResultVO> handleException(Exception exception) {
+        return Mono.just(ResultVO.error(400, "请求错误"));
     }
 }

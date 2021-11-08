@@ -2,13 +2,14 @@ package com.example.mentorselection.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDateTime;
 
@@ -22,9 +23,9 @@ public class User {
     public static final int ROLE_ADMIN = 5;
     @Id
     @CreatedBy
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     private String name;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String number;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;

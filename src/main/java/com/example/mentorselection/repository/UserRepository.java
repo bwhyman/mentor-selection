@@ -1,39 +1,40 @@
 package com.example.mentorselection.repository;
 
 import com.example.mentorselection.entity.User;
-import org.springframework.data.jdbc.repository.query.Modifying;
-import org.springframework.data.jdbc.repository.query.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.r2dbc.repository.Modifying;
+import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
     @Query("select * from user u where u.number=:number;")
-    User find(String number);
+    Mono<User> find(String number);
 
     @Query("select * from user u where u.role=:role;")
-    List<User> list(int role);
+    Flux<User> list(int role);
 
     @Query("select * from user u where u.id=:id for update;")
-    User findByIdForUpdate(long id);
+    Mono<User> findByIdForUpdate(long id);
 
     @Modifying
     @Query("update user u set u.count=u.count+1 where u.total-u.count>0 and id=:tid")
-    int updateTeacherCount(long tid);
+    Mono<Integer> updateTeacherCount(long tid);
 
     @Query("select * from user u where u.role=0 and u.teacher_id is null;")
-    List<User> listStudentsByUnselected();
+    Flux<User> listStudentsByUnselected();
 
     @Query("select * from user u where u.teacher_id=:tid and u.role=0;")
-    List<User> listStudentsByTid(long tid);
+    Flux<User> listStudentsByTid(long tid);
 
     @Modifying
     @Query("update user u set u.password=:password where u.number=:number")
-    int updatePassword(String number, String password);
+    Mono<Integer> updatePassword(String number, String password);
+
     @Modifying
     @Query("update user u set u.password=:password where u.id=:uid")
-    int updatePassword(long uid, String password);
+    Mono<Integer> updatePassword(long uid, String password);
 }

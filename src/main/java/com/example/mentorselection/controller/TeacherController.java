@@ -4,11 +4,13 @@ import com.example.mentorselection.entity.User;
 import com.example.mentorselection.service.TeacherService;
 import com.example.mentorselection.service.UserService;
 import com.example.mentorselection.vo.ResultVO;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
@@ -24,27 +26,22 @@ public class TeacherController {
 
     // 查看未选择学生
     @GetMapping("unselected")
-    public ResultVO getUnSelected() {
-        return ResultVO.success(Map.of("students",  teacherService.listUnselected()));
+    public Mono<ResultVO> getUnSelected() {
+        return teacherService.listUnselected()
+                .map(users -> ResultVO.success(Map.of("students", users)));
     }
 
     // 教师下学生
     @GetMapping("students")
-    public ResultVO getStudents(@RequestAttribute("uid") long tid) {
-        return ResultVO.success(Map.of("students",  teacherService.listStudents(tid)));
+    public Mono<ResultVO> getStudents(@RequestAttribute("uid") long tid) {
+        return teacherService.listStudents(tid)
+                .map(users -> ResultVO.success(Map.of("students", users)));
     }
-
-    // 关闭
-    /*@PostMapping("students")
-    public ResultVO postStudent(@RequestBody User student, @RequestAttribute("uid") long tid) {
-        teacherService.addStudent(tid, student);
-        User t = userService.getUser(tid);
-        return ResultVO.success(Map.of("students",  teacherService.listStudents(tid), "teacher", t));
-    }*/
 
     // 全部学生指导教师，导出表格用
     @GetMapping("allstudents")
-    public ResultVO getAllStudents() {
-        return ResultVO.success(Map.of("students",userService.listUsers(User.ROLE_STUDENT)));
+    public Mono<ResultVO> getAllStudents() {
+        return userService.listUsers(User.ROLE_STUDENT)
+                .map(users -> ResultVO.success(Map.of("students", users)));
     }
 }

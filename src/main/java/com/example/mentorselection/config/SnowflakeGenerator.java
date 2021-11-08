@@ -2,8 +2,9 @@ package com.example.mentorselection.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
+import org.springframework.data.domain.ReactiveAuditorAware;
+import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
+import reactor.core.publisher.Mono;
 
 import java.net.NetworkInterface;
 import java.security.SecureRandom;
@@ -11,12 +12,12 @@ import java.time.Instant;
 import java.util.Enumeration;
 
 @Configuration
-@EnableJdbcAuditing
+@EnableR2dbcAuditing
 public class SnowflakeGenerator {
     @Bean
-    AuditorAware<Long> auditorAware() {
+    ReactiveAuditorAware<Long> auditorAware() {
         Snowflake s = new Snowflake();
-        return () -> java.util.Optional.of(s.nextId());
+        return () -> Mono.just(s.nextId());
     }
 
     private static class Snowflake {
