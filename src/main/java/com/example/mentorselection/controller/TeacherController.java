@@ -6,10 +6,7 @@ import com.example.mentorselection.service.UserService;
 import com.example.mentorselection.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -17,6 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/teacher/")
 @Slf4j
+@CrossOrigin
 public class TeacherController {
     @Autowired
     private UserService userService;

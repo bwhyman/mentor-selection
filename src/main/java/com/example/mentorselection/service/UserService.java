@@ -35,7 +35,7 @@ public class UserService {
         return userRepository.updatePassword(uid, encoder.encode(pwd))
                 .doOnSuccess(r -> {
                     if (r == 0) {
-                        throw new XException(400, "密码重置失败，账号不存在");
+                        throw new XException(XException.BAD_REQUEST, "密码重置失败，账号不存在");
                     }
                 }).then();
     }
@@ -53,27 +53,27 @@ public class UserService {
         Mono<User> studentM = userRepository.findByIdForUpdate(sid)
                 .doOnSuccess(s -> {
                     if (s == null) {
-                        throw new XException(400, "学生不存在");
+                        throw new XException(XException.BAD_REQUEST, "学生不存在");
                     }
                     if (s.getTeacherId() != null) {
-                        throw new XException(400, "导师不可重复选择");
+                        throw new XException(XException.BAD_REQUEST, "导师不可重复选择");
                     }
                 });
 
         Mono<User> teacherM = userRepository.findById(tid)
                 .doOnSuccess(t -> {
                     if (t == null) {
-                        throw new XException(400, "导师不存在");
+                        throw new XException(XException.BAD_REQUEST, "导师不存在");
                     }
                     if (t.getTotal() - t.getCount() <= 0) {
-                        throw new XException(400, "导师数量已满，请重新选择");
+                        throw new XException(XException.BAD_REQUEST, "导师数量已满，请重新选择");
                     }
                 });
 
         Mono<Integer> resultM = userRepository.updateTeacherCount(tid)
                 .doOnSuccess(r -> {
                     if (r == 0) {
-                        throw new XException(400, "导师数量已满，请重新选择");
+                        throw new XException(XException.BAD_REQUEST, "导师数量已满，请重新选择");
                     }
                 });
 

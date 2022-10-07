@@ -19,6 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/")
 @Slf4j
+@CrossOrigin
 public class UserController {
     @Autowired
     private UserService userService;
@@ -34,11 +35,12 @@ public class UserController {
         return userService.getUser(user.getNumber())
                 .doOnSuccess(u -> {
                     if (u == null || !encoder.matches(user.getPassword(), u.getPassword())) {
-                        throw new XException(401, "账号密码错误");
+                        throw new XException(XException.UNAUTHORIZED, "账号密码错误");
                     }
                 }).map(u -> {
                     String token = jwtComponent.encode(Map.of("uid", u.getId(), "role", u.getRole()));
                     response.getHeaders().add("token", token);
+
                     String role = "";
                     switch (u.getRole()) {
                         case User.ROLE_STUDENT:
@@ -72,7 +74,7 @@ public class UserController {
     @GetMapping("teachers")
     public Mono<ResultVO> getTeachers(@RequestAttribute("role") int role) {
         return role == User.ROLE_STUDENT && startTime.getStartTime().isAfter(LocalDateTime.now())
-                ? Mono.just(ResultVO.error(400, "开始时间：" + startTime.getStartTime().toString().replace("T", " ")))
+                ? Mono.just(ResultVO.error(XException.BAD_REQUEST, "开始时间：" + startTime.getStartTime().toString().replace("T", " ")))
                 : userService.listUsers(User.ROLE_TEACHER)
                 .map(users -> ResultVO.success(Map.of("teachers", users)));
     }
@@ -81,7 +83,7 @@ public class UserController {
     @PutMapping("teachers/{tid}")
     public Mono<ResultVO> postSection(@PathVariable long tid, @RequestAttribute("uid") long uid) {
         if (startTime.getStartTime().isAfter(LocalDateTime.now())) {
-            throw new XException(400, "未到开始时间");
+            throw new XException(XException.BAD_REQUEST, "未到开始时间");
         }
         return userService.select(uid, tid)
                 .map(u -> ResultVO.success(Map.of("user", u)));

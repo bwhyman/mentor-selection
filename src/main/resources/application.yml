@@ -2,10 +2,10 @@ spring:
   sql:
     init:
       mode: always
-  r2dbc:
-    url: r2dbcs:mysql://123.57.27.150:3306/mentorselection?createDatabaseIfNotExist=true&serverTimezone=Asia/Shanghai
-    username: 2046
-    password: 6402
+  r2dbc: # createDatabaseIfNotExist不支持
+    url: r2dbcs:mysql://114.116.203.165:3306/mentorselection?createDatabaseIfNotExist=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: a1213a
     pool:
       enabled: true
       initial-size: 1
@@ -34,11 +34,10 @@ spring:
   config:
     activate:
       on-profile: prod
-  datasource:
+  r2dbc:
     url: r2dbcs:mysql://${dhost}/mentorselection?createDatabaseIfNotExist=true&serverTimezone=Asia/Shanghai
     username: ${dusername}
     password: ${dpassword}
-  r2dbc:
     pool:
       max-size: 200
 my:
@@ -48,5 +47,8 @@ logging:
     root: info
     com:
       example: info
+    org:
+      springframework:
+        r2dbc: warn
   pattern:
     console: '%-5level %C.%M[%line] - %msg%n'

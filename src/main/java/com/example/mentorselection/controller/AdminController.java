@@ -17,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/admin/")
 @Slf4j
+@CrossOrigin
 public class AdminController {
     @Autowired
     private TeacherService teacherService;
@@ -39,7 +40,7 @@ public class AdminController {
     }
 
     // 添加教师
-    @PostMapping("teachers")
+    /*@PostMapping("teachers")
     public Mono<ResultVO> postTeacher(@RequestBody User user) {
         user.setRole(User.ROLE_TEACHER);
         user.setPassword(encoder.encode(user.getNumber()));
@@ -48,6 +49,18 @@ public class AdminController {
         return teacherService.addUser(user)
                 .flatMap(u -> userService.listUsers(User.ROLE_TEACHER)
                         .flatMap(users -> Mono.just(ResultVO.success(Map.of("teachers", users)))));
+    }*/
+
+    @PostMapping("teachers")
+    public Mono<ResultVO> postTeachers(@RequestBody List<User> users) {
+        for (User u : users) {
+            u.setPassword(encoder.encode(u.getNumber()));
+            u.setRole(User.ROLE_TEACHER);
+            u.setCount(0);
+            u.setInsertTime(LocalDateTime.now());
+        }
+        return teacherService.addUsers(users)
+                .map(users1 -> ResultVO.success(Map.of("teachers", users1)));
     }
 
     // 添加学生列表

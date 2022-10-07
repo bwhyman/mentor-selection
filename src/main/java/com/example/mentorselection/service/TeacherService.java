@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,7 +48,7 @@ public class TeacherService {
         return userRepository.updatePassword(number, encoder.encode(number))
                 .doOnSuccess(r -> {
                     if (r == 0) {
-                        throw new XException(400, "密码重置失败，账号不存在");
+                        throw new XException(XException.BAD_REQUEST, "密码重置失败，账号不存在");
                     }
                 }).then();
     }
