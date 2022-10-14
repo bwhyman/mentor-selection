@@ -31,6 +31,7 @@ public class UserService {
     }
 
     // 个人更新密码
+    @Transactional
     public Mono<Void> updatePassword(long uid, String pwd) {
         return userRepository.updatePassword(uid, encoder.encode(pwd))
                 .doOnSuccess(r -> {

@@ -23,9 +23,15 @@ public class LoginFilter implements WebFilter {
     private JWTComponent jwtComponent;
 
     private final List<String> excludes = List.of("/api/login");
+    private final List<String> includes = List.of("/api/");
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        for (String p : includes) {
+            if (!exchange.getRequest().getPath().pathWithinApplication().value().startsWith(p)) {
+                return chain.filter(exchange);
+            }
+        }
         for (String excludeP : excludes) {
             if (request.getPath().pathWithinApplication().value().equals(excludeP)) {
                 return chain.filter(exchange);
@@ -36,7 +42,7 @@ public class LoginFilter implements WebFilter {
             // WebExceptionHandler处理
             throw new XException(401, "未登录");
         }
-        DecodedJWT decode = jwtComponent.decode(request.getHeaders().getFirst("token"));
+        DecodedJWT decode = jwtComponent.decode(token);
         exchange.getAttributes().put("uid", decode.getClaim("uid").asLong());
         exchange.getAttributes().put("role", decode.getClaim("role").asInt());
         return chain.filter(exchange);

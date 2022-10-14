@@ -73,6 +73,9 @@ webflux中禁止阻塞操作，所有方法必须返回Flux/Mono，直到control
 可通过注解实现应用多种事件的监听回调。可通过监听ApplicationReadyEvent事件在应用就绪后执行初始化数据的插入  
 
 ### Updates
+#### 2022.10.09
+通过Swagger3.0暴露接口调试，直接支持webflux，支持手动添加token测试接口。/swagger-ui/index.html  
+
 #### 2022.08.13
 开跨域，给学生练习提供接口
 
