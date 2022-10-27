@@ -33,6 +33,7 @@ public class User {
     private int role;
     private Integer total;
     private Integer count;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long teacherId;
     private String teacherName;
     private String description;

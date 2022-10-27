@@ -8,11 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -61,5 +59,12 @@ public class TeacherService {
     //获取指定教师下的学生
     public Mono<List<User>> listStudents(long tid) {
         return userRepository.listStudentsByTid(tid).collectList();
+    }
+
+    // 重置数据
+    @Transactional
+    public Mono<Integer> updateStudentsAndTeachersByReset() {
+        return userRepository.updateTeachersByCount()
+                .flatMap(c -> userRepository.updateStudentsByTeacherNull());
     }
 }

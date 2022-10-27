@@ -28,13 +28,14 @@ public class InitService {
     @Transactional
     @EventListener(classes = ApplicationReadyEvent.class)
     public Mono<Void> onApplicationEvent() {
-        String number = "2046";
+        String number = "admin";
+        var pwd = "2046";
         return userRepository.count().flatMap(r -> {
             if (r == 0) {
                 User admin = User.builder()
-                        .name("admin")
+                        .name(number)
                         .number(number)
-                        .password(encoder.encode(number))
+                        .password(encoder.encode(pwd))
                         .role(User.ROLE_ADMIN)
                         .insertTime(LocalDateTime.now())
                         .selectTime(LocalDateTime.now().plusMonths(5))

@@ -15,6 +15,9 @@ public class ResultVO {
     public static ResultVO success(Map<String, Object> data) {
         return ResultVO.builder().code(200).data(data).build();
     }
+    public static ResultVO success(int code, Map<String, Object> data) {
+        return ResultVO.builder().code(code).data(data).build();
+    }
 
     public static ResultVO error(int code, String msg) {
         return ResultVO.builder().code(code).message(msg).build();

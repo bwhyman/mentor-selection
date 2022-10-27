@@ -25,7 +25,11 @@ public class ExceptionHandler implements WebExceptionHandler {
     @SneakyThrows
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-        String result = objectMapper.writeValueAsString(ResultVO.error(400,ex.getMessage()));
+        int code = 400;
+        if(ex instanceof XException) {
+            code = ((XException) ex).getCode();
+        }
+        String result = objectMapper.writeValueAsString(ResultVO.error(code,ex.getMessage()));
         byte[] bytes = result.getBytes(StandardCharsets.UTF_8);
         DataBuffer wrap = exchange.getResponse().bufferFactory().wrap(bytes);
         exchange.getResponse().setStatusCode(HttpStatus.OK);

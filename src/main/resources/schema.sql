@@ -1,8 +1,10 @@
+create database if not exists `mentorselection`;
+use `mentorselection`;
 create table if not exists user
 (
     id bigint(19) not null primary key,
     name varchar(10) not null,
-    number varchar(45) null,
+    number varchar(45) not null,
     password varchar(65) not null,
     total int null,
     count int null,
@@ -12,7 +14,8 @@ create table if not exists user
     teacher_name varchar (45) null,
     select_time datetime null,
     insert_time datetime not null default current_timestamp,
-    index (number, password),
+    index (number),
     index (teacher_id),
+    index (role),
     unique (number)
 );

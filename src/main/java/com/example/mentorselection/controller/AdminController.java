@@ -82,4 +82,15 @@ public class AdminController {
         return teacherService.addStartTime(startTime, uid)
                 .then(Mono.just(ResultVO.success(Map.of("time", startTime))));
     }
+
+    /**
+     * 重置数据
+     * @return
+     */
+    @PostMapping("data/reset")
+    public Mono<ResultVO> postTeachersCounts() {
+        return teacherService.updateStudentsAndTeachersByReset()
+                .then(Mono.just(ResultVO.success(Map.of())));
+    }
+
 }

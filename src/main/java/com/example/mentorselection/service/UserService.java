@@ -3,6 +3,7 @@ package com.example.mentorselection.service;
 import com.example.mentorselection.entity.User;
 import com.example.mentorselection.exception.XException;
 import com.example.mentorselection.repository.UserRepository;
+import com.example.mentorselection.vo.Code;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,14 +68,14 @@ public class UserService {
                         throw new XException(XException.BAD_REQUEST, "导师不存在");
                     }
                     if (t.getTotal() - t.getCount() <= 0) {
-                        throw new XException(XException.BAD_REQUEST, "导师数量已满，请重新选择");
+                        throw new XException(Code.QUANTITY_FULL, "导师数量已满，请重新选择");
                     }
                 });
 
         Mono<Integer> resultM = userRepository.updateTeacherCount(tid)
                 .doOnSuccess(r -> {
                     if (r == 0) {
-                        throw new XException(XException.BAD_REQUEST, "导师数量已满，请重新选择");
+                        throw new XException(Code.QUANTITY_FULL, "导师数量已满，请重新选择");
                     }
                 });
 

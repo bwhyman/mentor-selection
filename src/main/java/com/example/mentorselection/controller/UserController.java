@@ -5,6 +5,7 @@ import com.example.mentorselection.entity.StartTime;
 import com.example.mentorselection.entity.User;
 import com.example.mentorselection.exception.XException;
 import com.example.mentorselection.service.UserService;
+import com.example.mentorselection.vo.Code;
 import com.example.mentorselection.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -64,17 +66,34 @@ public class UserController {
     }
 
     @GetMapping("info")
-    public Mono<ResultVO> getInfo(@RequestAttribute("uid") long uid) {
-        return userService.getUser(uid)
-                .map(user -> ResultVO.success(Map.of("user", user,"starttime", startTime.getStartTime())));
+    public Mono<ResultVO> getInfo(@RequestAttribute("uid") long uid, @RequestAttribute("role") int role) {
+        Mono<User> userM = userService.getUser(uid);
+        Mono<List<User>> teachersM = userService.listUsers(User.ROLE_TEACHER);
+        return userM.flatMap(user -> {
+            // 学生
+            if (role == User.ROLE_STUDENT) {
+                // 已选择
+                if (user.getTeacherId() != null) {
+                    return Mono.just(ResultVO.success(Map.of("user", user)));
+                }
+                // 已开始
+                if (LocalDateTime.now().isAfter(startTime.getStartTime())) {
+                    return teachersM.map(teachers -> ResultVO.success(Map.of("user", user, "teachers", teachers)));
+                }
+                // 未开始
+                return teachersM.map(teachers -> ResultVO.success(Map.of("user", user, "starttime",
+                        startTime.getStartTime())));
+            }
+            // 非学生
+            return Mono.just(ResultVO.success(Map.of("user", user, "starttime", startTime.getStartTime())));
+        });
     }
-
 
     // 全部教师信息
     @GetMapping("teachers")
     public Mono<ResultVO> getTeachers(@RequestAttribute("role") int role) {
         return role == User.ROLE_STUDENT && startTime.getStartTime().isAfter(LocalDateTime.now())
-                ? Mono.just(ResultVO.error(XException.BAD_REQUEST, "开始时间：" + startTime.getStartTime().toString().replace("T", " ")))
+                ? Mono.just(ResultVO.success(Code.NOT_START, Map.of()))
                 : userService.listUsers(User.ROLE_TEACHER)
                 .map(users -> ResultVO.success(Map.of("teachers", users)));
     }

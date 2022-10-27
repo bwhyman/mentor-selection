@@ -5,13 +5,14 @@ POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-  "number": "2046",
-  "password": "2046"
+  "number": "2020211462",
+  "password": "2020211462"
 }
 
 > {% client.global.set("token", response.headers.valueOf("token")); %}
 ###
-GET http://localhost:8080/api/teachers
+GET http://localhost:8080/api/info
+token: {{token}}
 
 ###
 GET http://localhost:8080/api/teacher/903616315497340928/students
@@ -49,3 +50,9 @@ Content-Type: application/json
     "number": "s11"
   }
 ]
+
+###
+POST http://localhost:8080/api/admin/data/reset
+token: {{token}}
+
+

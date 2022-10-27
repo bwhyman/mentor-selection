@@ -2,8 +2,8 @@ spring:
   sql:
     init:
       mode: always
-  r2dbc: # createDatabaseIfNotExist不支持
-    url: r2dbcs:mysql://114.116.203.165:3307/mentorselection?serverTimezone=Asia/Shanghai
+  r2dbc: # createDatabaseIfNotExist/serverTimezone不支持
+    url: r2dbcs:mysql://114.116.203.165:3307/?serverTimezone=Asia/Shanghai
     username: root
     password: 1157
     pool:
@@ -35,7 +35,7 @@ spring:
     activate:
       on-profile: prod
   r2dbc:
-    url: r2dbcs:mysql://${dhost}/mentorselection?serverTimezone=Asia/Shanghai
+    url: r2dbcs:mysql://${dhost}/?serverTimezone=Asia/Shanghai
     username: ${dusername}
     password: ${dpassword}
     pool:

@@ -29,4 +29,9 @@ public class TeacherServiceTest {
                 .build();
         teacherService.addUser(u).block();
     }
+
+    @Test
+    public void test2() {
+        teacherService.updateStudentsAndTeachersByReset().block();
+    }
 }
